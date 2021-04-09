@@ -27,43 +27,40 @@ def newStatus(current):
                 col = j
     if row > 0:
         temp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
-        current[row][col], current[row - 1][col] = current[row - 1][col], current[row][col]
         for i in range(0, 3):
             for j in range(0, 3):
                 temp[i][j] = current[i][j]
+        temp[row][col], temp[row - 1][col] = temp[row - 1][col], temp[row][col]
         if not isVisited(temp):
             ret.append(temp)
-        current[row][col], current[row - 1][col] = current[row - 1][col], current[row][col]
 
     if row < 2:
         temp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
-        current[row][col], current[row + 1][col] = current[row + 1][col], current[row][col]
         for i in range(0, 3):
             for j in range(0, 3):
                 temp[i][j] = current[i][j]
+        temp[row][col], temp[row + 1][col] = temp[row + 1][col], temp[row][col]
         if not isVisited(temp):
             ret.append(temp)
-        current[row][col], current[row + 1][col] = current[row + 1][col], current[row][col]
 
     if col > 0:
         temp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
-        current[row][col], current[row][col - 1] = current[row][col - 1], current[row][col]
         for i in range(0, 3):
             for j in range(0, 3):
                 temp[i][j] = current[i][j]
+        temp[row][col], temp[row][col - 1] = temp[row][col - 1], temp[row][col]
         if not isVisited(temp):
             ret.append(temp)
-        current[row][col], current[row][col - 1] = current[row][col - 1], current[row][col]
 
     if col < 2:
         temp = [[-1,-1,-1], [-1,-1,-1], [-1,-1,-1]]
-        current[row][col], current[row][col + 1] = current[row][col + 1], current[row][col]
         for i in range(0, 3):
             for j in range(0, 3):
                 temp[i][j] = current[i][j]
+        temp[row][col], temp[row][col + 1] = temp[row][col + 1], temp[row][col]
         if not isVisited(temp):
             ret.append(temp)
-        current[row][col], current[row][col + 1] = current[row][col + 1], current[row][col]
+
     return ret
 
 
@@ -125,4 +122,9 @@ def tilePath(current, goal, path, depth, limit):
 
 
 # test case
-print(tilepuzzle([[1, 2, 3], [8, 0, 4], [7, 6, 5]], [[2, 8, 3], [1, 0, 4], [7, 6, 5]]))
+start = [[0,1,2],[3,4,5],[6,7,8]]
+end = [[8,7,6],[5,4,3],[0,2,1]]
+answer = tilepuzzle(start, end)
+for e in answer:
+    print(e)
+print(len(answer))
