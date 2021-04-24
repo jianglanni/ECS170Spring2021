@@ -1,3 +1,74 @@
+# Lan Jiang
+# ECS170
+# HW2
+# :)
+
+import heapq
+
+visited = []
+frontier = []  # (f, g, state), a heap priority queue
+prev = {}  # to save the route
+
+
+# Find a state in frontier
+def frontier_search(state_str):
+    ret = -1
+    for i in range(0, len(frontier)):
+        if state_str == frontier[i]:
+            ret = i
+            break
+    return ret
+
+
+def rushhour(heu, state_mat):
+    from_goal = rushhour_astar(heu, mat_to_str(state_mat))
+    route = []
+    while from_goal != "":
+        route.append(from_goal)
+        from_goal = prev[from_goal]
+    for i in range(0, len(route))[::-1]:
+        print_boi(str_to_mat(route[i]))
+    print("Total moves:", len(route) - 1)
+    print("Total states explored:", len(frontier) + len(visited))
+
+
+# Main problem solver
+def rushhour_astar(heu, state_str):
+    if heu == 0:
+        heapq.heappush(frontier, (h_block(state_str), 0, state_str))
+    else:
+        heapq.heappush(frontier, (0, 0, state_str))
+    prev[state_str] = ""
+    #  A* algorithm starts here
+    while len(frontier):
+        state_tuple = heapq.heappop(frontier)
+        visited.append(state_tuple[2])
+        next_steps = new_moves(state_tuple[2])
+        for step in next_steps:
+            if step in visited:
+                continue
+            if is_goal(step):
+                prev[step] = state_tuple[2]
+                return step
+            cur_g = state_tuple[1] + 1 # new g value
+            cur_f = cur_g
+            if heu == 0:  # Given heuristic
+                cur_f += h_block(state_tuple[2])
+            else:  # My heuristic
+                cur_f += 0
+            if frontier_search(step) != -1:  # Detected this state in frontier already
+                temp_loc = frontier_search(step)
+                if cur_g < frontier[temp_loc][1]:  # Current g is smaller than existing g
+                    frontier[temp_loc] = (cur_f, cur_g, step)  # renew the frontier
+                    heapq.heapify(frontier)  # Keep the frontier in order
+                    prev[step] = state_tuple[2]  # Route update
+            else:
+                prev[step] = state_tuple[2]  # Route
+                heapq.heappush(frontier, (cur_f, cur_g, step))  # Update frontier
+    print("Failed")
+    return ""
+
+
 # matrix (list) to string
 def mat_to_str(lst):
     ret = ""
@@ -17,6 +88,10 @@ def str_to_mat(rows):
 # Quick, direct access to string
 def coord(x, y):
     return 6 * x + y
+
+
+def is_goal(state_str):
+    return state_str[coord(2, 5)] == 'X'
 
 
 # Given heuristic
@@ -217,11 +292,9 @@ def truck_down(state_str, i, j):
 def print_boi(mat):
     for i in range(0, 6):
         print(mat[i])
-    print('\n')
+    print("")
 
 
-state = ["-BBB--","----CD","XX--CD","--AA-D","------","------"]
-print_boi(state)
-for i in new_moves(mat_to_str(state)):
-    print_boi(str_to_mat(i))
-print(h_block(mat_to_str(state)))
+state2 = ["--B---","--B---","XXB---","--AA--","------","------"]
+state3 = ["--A---","--ABBB","--XXC-","----C-","----D-","----D-"]
+rushhour(0, state3)
