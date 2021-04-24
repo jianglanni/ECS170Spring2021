@@ -7,7 +7,7 @@
 
 # Try to find an answer quickly by giving different depth limits to the searches
 def tilepuzzle(initial, goal):
-    depth_list = [5, 10, 30] # Three different depth limits
+    depth_list = [5, 15, 30] # Three different depth limits
     for depth_limit in depth_list:
         ret = statesearch(initial, goal, [], 0, depth_limit)[::-1]
         if ret:
@@ -124,9 +124,9 @@ def newStatus(current):
 
 
 # My own test case
-start = [[2,5,7],[8,0,6],[1,4,3]]
-end = [[1,2,3],[4,5,6],[7,8,0]]
-answer = tilepuzzle(start, end)
-for e in answer:
-    print(e)
-print(len(answer))
+# start = [[0,8,7],[6,5,4],[3,2,1]]
+# end = [[1,2,3],[4,5,6],[7,8,0]]
+# answer = tilepuzzle(start, end)
+# for e in answer:
+#     print(e)
+# print(len(answer))
