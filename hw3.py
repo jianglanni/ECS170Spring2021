@@ -3,31 +3,33 @@
 # HW3
 # =w=
 
-
-# Interface for testing, and evaluate the board for the first layer
+# Interface for testing, and evaluate the board for the first layer, return [] if the given state is an endgame
+# At last, all the children are kept in moves, in tuples (minimax_value, state)
 def hexapawn(state_mat, size, turn, depth):
     state_str = mat_to_str(state_mat)
+    if abs(board_eval(state_str, size)) == 99:  # Endgame case 1
+        return []
     moves = new_moves(state_str, size, turn)  # Get the new moves
+    if len(moves) == 0:  # Endgame case 2
+        return []
     moves = list(moves)
     if turn == 'b':
         for i in range(0, len(moves)):
-            moves[i] = recur_pawn_game(moves[i], size, 'w', depth-1), moves[i]
+            moves[i] = recur_pawn_game(moves[i], size, 'w', depth-1), moves[i]  # Ask for minimax board values
     elif turn == 'w':
         for i in range(0, len(moves)):
-            moves[i] = recur_pawn_game(moves[i], size, 'b', depth-1), moves[i]
+            moves[i] = recur_pawn_game(moves[i], size, 'b', depth-1), moves[i]  # Ask for minimax board values
     moves.sort(reverse=(turn == 'b'))  # Sort all moves from smallest to biggest if white, opposite if black
-    for i in range(len(moves)):
-        print(moves[i][0], str_to_mat(moves[i][1], size))
-    return str_to_mat(moves[0][1], size)  # Get the board with the smallest (white)/ biggest (black) value
+    return str_to_mat(moves[0][1], size)  # Return the board with the smallest (white)/ biggest (black) value
 
 
-# The recursive evaluator, taking a state, size, turn, and depth, returns the board value based on its children
+# The recursive evaluator, taking a state, size, turn, and depth, search, returns the board value based on its children
 def recur_pawn_game(state_str, size, turn, depth):
     board_value = board_eval(state_str, size)
     if depth == 0 or abs(board_value) == 99:  # Hit the bottom or win
         return board_value
     moves = new_moves(state_str, size, turn)
-    if len(moves) == 0:  # No more moves for the current player
+    if len(moves) == 0:  # No more moves for the current player, lose
         if turn == 'b':
             return -99
         if turn == 'w':
@@ -36,7 +38,7 @@ def recur_pawn_game(state_str, size, turn, depth):
     if turn == 'b':  # It's black's turn to move
         for i in range(0, len(moves)):
             moves[i] = recur_pawn_game(moves[i], size, 'w', depth-1)
-            if moves[i] == 99:  # Win!
+            if moves[i] == 99:  # In case it just wins.
                 return moves[i]  # Immediately jump out due to the winning
         moves.sort(reverse=True)
     if turn == 'w':  # It's white's turn to move
@@ -93,7 +95,7 @@ def str_to_mat(state_str, size):
 # The following functions generate new moves, taking the current state, size, and turn
 def new_moves(state_str, size, turn):
     ret = []
-    for i in range(0, size):  # For each space on the board, check if there are any possible moves for a pawn on it
+    for i in range(0, size):  # For each space on the board, check if there are any possible moves for the pawn on it
         for j in range(0, size):
             if turn == 'w':
                 ret = ret + w_move(state_str, size, i, j)
@@ -116,7 +118,7 @@ def w_move(state_str, size, i, j):
     state_mat[i][j] = '-'
     state_mat[i+1][j] = 'w'
     state_mat[i] = ''.join(state_mat[i])
-    state_mat[i+1] = ''.join(state_mat[i+1])
+    state_mat[i+1] = ''.join(state_mat[i+1])  # A bunch of manipulations on the state, same for following functions
     return [mat_to_str(state_mat)]
 
 
@@ -147,7 +149,7 @@ def w_kill(state_str, size, i, j):
             state_mat[i] = ''.join(state_mat[i])
             state_mat[i+1] = ''.join(state_mat[i+1])
             ret.append(mat_to_str(state_mat))
-    return ret  # Return a tuple that contains all next moves
+    return ret  # Return a list that contains all next moves
 
 
 # A black pawn on (i, j) moves forward
@@ -196,7 +198,7 @@ def b_kill(state_str, size, i, j):
     return ret
 
 
-# Properly print the board for debug
+# Properly print the board for debug, taking a string (state) and the size
 def print_boi(state_str, size):
     mat = str_to_mat(state_str, size)
     for i in range(0, size):
@@ -204,8 +206,10 @@ def print_boi(state_str, size):
     print("")
 
 
-state1 = ["-w-w", "w-w-", "-b--", "b-bb"]
-state2 = ["-ww", "w--", "bbb"]
-state3 = ["www", "---", "bbb"]
-state4 = ["wwww", "----", "----", "bbbb"]
-print(hexapawn(['---w', 'www-', 'b-b-', '-b-b'], 4, 'b', 15))
+# My test cases
+# state1 = ["-w-w", "w-w-", "-b--", "b-bb"]
+# state2 = ["-ww", "w--", "bbb"]
+# state3 = ["www", "---", "bbb"]
+# state4 = ["wwww", "----", "----", "bbbb"]
+# print(hexapawn(state2, 3, 'b', 2))  # This one is the one on the slide
+# print(hexapawn(state4, 4, 'w', 15))  # This one proves that the first mover on 4*4 100% wins
